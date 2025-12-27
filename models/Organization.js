@@ -84,6 +84,14 @@ const organizationSchema = new mongoose.Schema({
             default: 'Holiday'
         }
     }],
+    weeklyDaysOff: [{
+        type: String,
+        enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    }],
+    isCurrentlyOpen: {
+        type: Boolean,
+        default: true
+    },
     createdAt: {
         type: Date,
         default: Date.now

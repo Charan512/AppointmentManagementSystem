@@ -87,10 +87,18 @@ const isSlotAvailable = async (organizationId, appointmentDate, appointmentTime,
  * @param {Date} appointmentDate - Appointment date
  * @param {String} appointmentTime - Appointment time (HH:MM)
  * @param {Array} daysOff - Array of days off objects with date and reason
+ * @param {Boolean} isCurrentlyOpen - Manual open/closed status
+ * @param {Array} weeklyDaysOff - Array of weekly recurring days off
  * @returns {Boolean} True if within working hours
  */
-const isWithinWorkingHours = (workingHours, appointmentDate, appointmentTime, daysOff = []) => {
+const isWithinWorkingHours = (workingHours, appointmentDate, appointmentTime, daysOff = [], isCurrentlyOpen = true, weeklyDaysOff = []) => {
     try {
+        // Check if organization is manually closed
+        if (!isCurrentlyOpen) {
+            console.log('Organization is manually closed');
+            return false;
+        }
+
         // Check if the date is a day off
         const appointmentDateObj = new Date(appointmentDate);
         appointmentDateObj.setHours(0, 0, 0, 0);
@@ -109,6 +117,12 @@ const isWithinWorkingHours = (workingHours, appointmentDate, appointmentTime, da
         const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const date = new Date(appointmentDate);
         const dayName = dayNames[date.getDay()];
+
+        // Check if day is in weekly days off
+        if (weeklyDaysOff && weeklyDaysOff.includes(dayName)) {
+            console.log(`${dayName} is a weekly day off`);
+            return false;
+        }
 
         const schedule = workingHours.find(wh => wh.day === dayName && wh.isOpen);
 

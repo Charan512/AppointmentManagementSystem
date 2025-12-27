@@ -47,10 +47,17 @@ const bookAppointment = async (req, res) => {
         }
 
         // Check if within working hours
-        if (!isWithinWorkingHours(organization.workingHours, appointmentDate, appointmentTime, organization.daysOff)) {
+        if (!isWithinWorkingHours(
+            organization.workingHours,
+            appointmentDate,
+            appointmentTime,
+            organization.daysOff,
+            organization.isCurrentlyOpen,
+            organization.weeklyDaysOff
+        )) {
             return res.status(400).json({
                 success: false,
-                message: 'Appointment time is outside working hours or on a day off'
+                message: 'Appointment time is outside working hours, on a day off, or organization is temporarily closed'
             });
         }
 
