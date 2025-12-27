@@ -86,10 +86,26 @@ const isSlotAvailable = async (organizationId, appointmentDate, appointmentTime,
  * @param {Array} workingHours - Array of working hour objects
  * @param {Date} appointmentDate - Appointment date
  * @param {String} appointmentTime - Appointment time (HH:MM)
+ * @param {Array} daysOff - Array of days off objects with date and reason
  * @returns {Boolean} True if within working hours
  */
-const isWithinWorkingHours = (workingHours, appointmentDate, appointmentTime) => {
+const isWithinWorkingHours = (workingHours, appointmentDate, appointmentTime, daysOff = []) => {
     try {
+        // Check if the date is a day off
+        const appointmentDateObj = new Date(appointmentDate);
+        appointmentDateObj.setHours(0, 0, 0, 0);
+
+        const isDayOff = daysOff.some(dayOff => {
+            const dayOffDate = new Date(dayOff.date);
+            dayOffDate.setHours(0, 0, 0, 0);
+            return dayOffDate.getTime() === appointmentDateObj.getTime();
+        });
+
+        if (isDayOff) {
+            console.log(`${appointmentDate} is marked as a day off`);
+            return false;
+        }
+
         const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const date = new Date(appointmentDate);
         const dayName = dayNames[date.getDay()];

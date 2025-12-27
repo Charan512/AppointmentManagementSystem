@@ -73,6 +73,17 @@ const organizationSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    daysOff: [{
+        date: {
+            type: Date,
+            required: true
+        },
+        reason: {
+            type: String,
+            trim: true,
+            default: 'Holiday'
+        }
+    }],
     createdAt: {
         type: Date,
         default: Date.now
