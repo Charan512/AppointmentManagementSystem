@@ -108,21 +108,4 @@ organizationSchema.pre('save', function (next) {
     next();
 });
 
-// Virtual field to check if organization is currently open
-organizationSchema.virtual('isCurrentlyOpen').get(function () {
-    const now = new Date();
-    const currentDay = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][now.getDay()];
-    const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-    const todaySchedule = this.workingHours.find(wh => wh.day === currentDay && wh.isOpen);
-
-    if (!todaySchedule) return false;
-
-    return currentTime >= todaySchedule.startTime && currentTime <= todaySchedule.endTime;
-});
-
-// Ensure virtuals are included in JSON
-organizationSchema.set('toJSON', { virtuals: true });
-organizationSchema.set('toObject', { virtuals: true });
-
 module.exports = mongoose.model('Organization', organizationSchema);
