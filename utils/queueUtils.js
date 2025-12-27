@@ -89,14 +89,37 @@ const isSlotAvailable = async (organizationId, appointmentDate, appointmentTime,
  * @returns {Boolean} True if within working hours
  */
 const isWithinWorkingHours = (workingHours, appointmentDate, appointmentTime) => {
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const dayName = dayNames[new Date(appointmentDate).getDay()];
+    try {
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const date = new Date(appointmentDate);
+        const dayName = dayNames[date.getDay()];
 
-    const schedule = workingHours.find(wh => wh.day === dayName && wh.isOpen);
+        const schedule = workingHours.find(wh => wh.day === dayName && wh.isOpen);
 
-    if (!schedule) return false;
+        if (!schedule) {
+            console.log(`No schedule found for ${dayName}`);
+            return false;
+        }
 
-    return appointmentTime >= schedule.startTime && appointmentTime <= schedule.endTime;
+        // Convert times to minutes for accurate comparison
+        const timeToMinutes = (timeStr) => {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        };
+
+        const appointmentMinutes = timeToMinutes(appointmentTime);
+        const startMinutes = timeToMinutes(schedule.startTime);
+        const endMinutes = timeToMinutes(schedule.endTime);
+
+        const isWithin = appointmentMinutes >= startMinutes && appointmentMinutes <= endMinutes;
+
+        console.log(`Checking ${appointmentTime} against ${schedule.startTime}-${schedule.endTime}: ${isWithin}`);
+
+        return isWithin;
+    } catch (error) {
+        console.error('Error in isWithinWorkingHours:', error);
+        return false;
+    }
 };
 
 /**
