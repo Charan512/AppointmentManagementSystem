@@ -78,11 +78,17 @@ const bookAppointment = async (req, res) => {
         }
 
         // Check slot availability
-        const slotAvailable = await isSlotAvailable(organizationId, appointmentDate, appointmentTime, expertName);
+        const slotAvailable = await isSlotAvailable(
+            organizationId,
+            appointmentDate,
+            appointmentTime,
+            expertName,
+            organization.reservedSlotsPerDay || 0
+        );
         if (!slotAvailable) {
             return res.status(400).json({
                 success: false,
-                message: 'This time slot is already booked'
+                message: 'Slot is already taken'
             });
         }
 
